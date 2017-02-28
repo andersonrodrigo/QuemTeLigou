@@ -98,13 +98,22 @@ public class SmsUtils {
 
                         if (objSms.getMsg().indexOf("Te Ligou:") > -1) {
                             try {
-                                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
-                                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+2,objSms.getMsg().indexOf(">")+7));
-                                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+7,objSms.getMsg().indexOf(">")+13));
-
                                 String data = c.getString(c.getColumnIndexOrThrow("date"));
+                                if (objSms.getMsg().indexOf("<")>-1) {
+                                    preencheObjetoSms(cr, data, objSms);
+                                    listaSms.add(objSms);
+                                }
+                            } catch (Exception e) {
+
+                            }
+
+                        }else  if (objSms.getMsg().indexOf("TIM Avisa:") > -1) {
+                            try {
+                                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
+                                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf("dia")+4,objSms.getMsg().indexOf("dia")+9));
+                                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf("as")+3,objSms.getMsg().indexOf("as")+8));
                                 Calendar d = Calendar.getInstance();
-                                d.setTimeInMillis(Long.valueOf(data));
+                                d.setTimeInMillis(Long.valueOf(c.getString(c.getColumnIndexOrThrow("date"))));
                                 String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
                                 objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
                                 String numeroBase = objSms.getNumeroTeLigou();
@@ -131,6 +140,26 @@ public class SmsUtils {
         }catch(Exception e){
             return new ArrayList<Sms>();
         }
+    }
+
+    /**
+     *
+     * @param cr
+     * @param objSms
+     */
+    public static void preencheObjetoSms(ContentResolver cr,String data,Sms objSms){
+        objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
+        objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+2,objSms.getMsg().indexOf(">")+7));
+        objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+7,objSms.getMsg().indexOf(">")+13));
+        Calendar d = Calendar.getInstance();
+        d.setTimeInMillis(Long.valueOf(data));
+        String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
+        objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
+        String numeroBase = objSms.getNumeroTeLigou();
+        if (numeroBase.length() == 14){
+            numeroBase = numeroBase.substring(6,14);
+        }
+        objSms.setNomeContato(recuperaNomeContato(cr,numeroBase));
     }
 
     /**
