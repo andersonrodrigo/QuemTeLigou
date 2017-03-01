@@ -1,13 +1,20 @@
 package com.andersonsilva.quemteligou.utils;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.res.AssetFileDescriptor;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.provider.Settings;
 
 import com.andersonsilva.quemteligou.entity.Sms;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -120,7 +127,7 @@ public class SmsUtils {
                                 if (numeroBase.length() == 14){
                                     numeroBase = numeroBase.substring(6,14);
                                 }
-                                objSms.setNomeContato(recuperaNomeContato(cr,numeroBase));
+                                recuperaNomeContato(cr,numeroBase,objSms);
                                 listaSms.add(objSms);
                             } catch (Exception e) {
 
@@ -151,49 +158,86 @@ public class SmsUtils {
         objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
         objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+2,objSms.getMsg().indexOf(">")+7));
         objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+7,objSms.getMsg().indexOf(">")+13));
-        Calendar d = Calendar.getInstance();
-        d.setTimeInMillis(Long.valueOf(data));
-        String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
+        String ano = (new SimpleDateFormat("yyyy").format(new Date()));
         objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
         String numeroBase = objSms.getNumeroTeLigou();
         if (numeroBase.length() == 14){
             numeroBase = numeroBase.substring(6,14);
         }
-        objSms.setNomeContato(recuperaNomeContato(cr,numeroBase));
+        recuperaNomeContato(cr,numeroBase,objSms);
     }
+
+    /**
+     *
+     * @param cr
+     * @param data
+     * @param objSms
+     */
+    public static void preencheObjetoSmsTorpedoCobrar(ContentResolver cr,String data,Sms objSms){
+        if (objSms.getMsg().indexOf("te enviou um")>-1){
+            objSms.setNumeroTeLigou(objSms.getMsg().substring(0,objSms.getMsg().indexOf("te enviou")));
+            objSms.setDataLigacao(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+            objSms.setHoraLigacao(new SimpleDateFormat("HH:mm").format(new Date()));
+        }else if (objSms.getMsg().indexOf("Vc tem ")>-1){
+            objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("Cobrar de ")+10,objSms.getMsg().indexOf(" pendente")));
+            objSms.setDataLigacao(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+            objSms.setHoraLigacao(new SimpleDateFormat("HH:mm").format(new Date()));
+        }else if (objSms.getMsg().indexOf("Para ver o restante do Torpedo")>-1){
+            objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("o numero ")+9,objSms.getMsg().indexOf(" te enviou responda")));
+            objSms.setDataLigacao(new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
+            objSms.setHoraLigacao(new SimpleDateFormat("HH:mm").format(new Date()));
+        }
+        String numeroBase = objSms.getNumeroTeLigou();
+        if (numeroBase!=null && numeroBase.length() == 14){
+            numeroBase = numeroBase.substring(6,14);
+            recuperaNomeContato(cr,numeroBase,objSms);
+        }
+
+    }
+
+
 
     /**
      *
      * @param numero
      * @return
      */
-    private static String recuperaNomeContato(ContentResolver cr,String numero){
+    private static void recuperaNomeContato(ContentResolver cr,String numero,Sms objSms){
         try {
             String[] PROJECTION = new String[] { ContactsContract.Contacts._ID,
-                    ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER };
+                    ContactsContract.Contacts.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.NUMBER,ContactsContract.CommonDataKinds.Phone.PHOTO_URI };
 
             Cursor c = cr.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, PROJECTION, null, null, null);
             if (c.moveToFirst()) {
                 String clsPhonename = null;
                 String clsphoneNo = null;
-
+                long contactId ;
                 do {
-                    clsPhonename =       c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    clsPhonename = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                    contactId    = c.getLong(c.getColumnIndex(ContactsContract.Contacts._ID));
                     clsphoneNo = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     String numeroBase = clsphoneNo.replace("-","");
-                    if (numeroBase.indexOf(numero)>-1) {
-                        return clsPhonename;
+                    if (numeroBase.indexOf(numero) > -1) {
+                        try {
+                            Bitmap bitmap = MediaStore.Images.Media .getBitmap(cr, Uri.parse(c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI))));
+                            objSms.setImagemContato(bitmap);
+                        } catch (Exception e) {
+                            objSms.setImagemContato(null);
+                        }
+                        objSms.setNomeContato(clsPhonename);
+                        break;
                     }
                 } while (c.moveToNext());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return recuperaNomeContatoSIM(cr,numero);
+        if (objSms.getNomeContato() == null || objSms.getNomeContato().equals(""))
+            recuperaNomeContatoSIM(cr,numero,objSms);
 
     }
 
-private static String recuperaNomeContatoSIM(ContentResolver cr,String numero){
+private static void recuperaNomeContatoSIM(ContentResolver cr,String numero, Sms objSms){
     try {
         String clsSimPhonename = null;
         String clsSimphoneNo = null;
@@ -206,15 +250,21 @@ private static String recuperaNomeContatoSIM(ContentResolver cr,String numero){
             clsSimphoneNo = cursorSim.getString(cursorSim.getColumnIndex("number"));
             String numeroBase = clsSimphoneNo.replace("-","");
             if (numeroBase.indexOf(numero)>-1) {
-                return clsSimPhonename;
+                objSms.setNomeContato(clsSimPhonename);
+                break;
             }
         }
 
     } catch (Exception e) {
         e.printStackTrace();
     }
-    return "Não encontrado nos Contatos";
+    objSms.setNomeContato("Não encontrado.");
 }
+
+
+
+
+
 
 }
 

@@ -1,5 +1,9 @@
 package com.andersonsilva.quemteligou.entity;
 
+import android.graphics.Bitmap;
+import android.net.Uri;
+
+import java.io.InputStream;
 import java.util.List;
 
 public class Sms {
@@ -21,6 +25,8 @@ public class Sms {
     private String valorReal;
     private String finalCartao;
     private String banco;
+
+    private Bitmap imagemContato;
 
     private String nomeContato;
 
@@ -177,5 +183,13 @@ public class Sms {
 
     public void setNomeContato(String nomeContato) {
         this.nomeContato = nomeContato;
+    }
+
+    public Bitmap getImagemContato() {
+        return imagemContato;
+    }
+
+    public void setImagemContato(Bitmap imagemContato) {
+        this.imagemContato = imagemContato;
     }
 }

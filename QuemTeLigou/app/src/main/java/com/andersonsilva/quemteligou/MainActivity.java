@@ -1,11 +1,23 @@
 package com.andersonsilva.quemteligou;
 
 import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.Shader;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -16,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -35,13 +48,15 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     static int  REQUEST_CODE_A = 10;
+    static int  REQUEST_CODE_B = 20;
+    static int  REQUEST_CODE_C = 30;
     ArrayList<Sms> listaSms = null;
     ListView listView = null;
 
     ExpandableListAdapter listAdapter;
     ExpandableListView expListView;
-    List<String> listDataHeader;
-    HashMap<String, List<String>> listDataChild;
+    List<Sms> listDataHeader;
+    HashMap<Sms, List<String>> listDataChild;
     private static SmsAdapter adapter;
 
     private boolean checkIfAlreadyhavePermission() {
@@ -73,7 +88,45 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
                     TextView valorTotal = (TextView) findViewById(R.id.tituloGeralApp);
-                    valorTotal.setText("Não consegui Ler seus SMSs, reintale novamente e me de permissão por favor.. :)");
+                    valorTotal.setText("Não consegui Ler seus SMSs, reinstale novamente e me de permissão por favor... Ou Me de Permissao nas configurações -> Aplicações :)");
+
+                    //   Toast.makeText(MainActivity.class, "Não posso ler seus SMSs.. :(", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case 20: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
+                    TextView valorTotal = (TextView) findViewById(R.id.tituloGeralApp);
+                    valorTotal.setText("Não consegui Ler seus Contatos, reinstale novamente e me de permissão por favor.. :) Ou Me de Permissao nas configurações -> Aplicações");
+
+                    //   Toast.makeText(MainActivity.class, "Não posso ler seus SMSs.. :(", Toast.LENGTH_SHORT).show();
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                }
+                return;
+            }
+            case 30: {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    // permission was granted, yay! Do the
+                    // contacts-related task you need to do.
+
+                } else {
+                    Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
+                    TextView valorTotal = (TextView) findViewById(R.id.tituloGeralApp);
+                    valorTotal.setText("Não consegui Ler seus SMSs que vao chegar, reinstale novamente e me de permissão por favor.. :) Ou Me de Permissao nas configurações -> Aplicações");
 
                     //   Toast.makeText(MainActivity.class, "Não posso ler seus SMSs.. :(", Toast.LENGTH_SHORT).show();
                     // permission denied, boo! Disable the
@@ -97,25 +150,66 @@ public class MainActivity extends AppCompatActivity
                     && ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.READ_CONTACTS)
                     && ActivityCompat.shouldShowRequestPermissionRationale(this,Manifest.permission.RECEIVE_SMS)
                     ) {
+
             } else {
                 ActivityCompat.requestPermissions(this,
                         new String[]{ Manifest.permission.READ_SMS},
                         REQUEST_CODE_A);
                 ActivityCompat.requestPermissions(this,
                         new String[]{ Manifest.permission.READ_CONTACTS},
-                        REQUEST_CODE_A);
+                        REQUEST_CODE_B);
                 ActivityCompat.requestPermissions(this,
                         new String[]{ Manifest.permission.RECEIVE_SMS},
-                        REQUEST_CODE_A);
+                        REQUEST_CODE_C);
 
 
             }
         }
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-      //  setSupportActionBar(toolbar);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        //  setSupportActionBar(toolbar);
+        toolbar.setTitle("Quem ja ligou????");
         iniciaActivity(toolbar);
+
+        Button buttonNotificacao = (Button) findViewById(R.id.botaoTesteNotificacao);
+        buttonNotificacao.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addNotification();
+            }
+        });
+
     }
+
+    private void addNotification() {
+        Sms sms = listaSms.get(0);
+        Bitmap circleBitmap = Bitmap.createBitmap(sms.getImagemContato().getWidth(), sms.getImagemContato().getHeight(), Bitmap.Config.ARGB_8888);
+        BitmapShader shader = new BitmapShader(sms.getImagemContato(),  Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+        Paint paint = new Paint();
+        paint.setShader(shader);
+        Canvas c = new Canvas(circleBitmap);
+        c.drawCircle(sms.getImagemContato().getWidth()/2, sms.getImagemContato().getHeight()/2, sms.getImagemContato().getWidth()/2, paint);
+
+        Drawable d = new BitmapDrawable(getResources(), circleBitmap);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.ic_account_circle_black_24dp)
+                        .setContentTitle("Te ligaram..")
+                        .setContentText("Me liga ai...");
+
+        builder.setLargeIcon(circleBitmap);
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+
+        // Add as notification
+        NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        manager.notify(0, builder.build());
+    }
+
 
 
     public void iniciaActivity( Toolbar toolbar){
@@ -173,6 +267,18 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.home) {
             Intent i = new Intent(getApplicationContext(), MainActivity.class);
             startActivity(i);
+        }else if (id == R.id.nav_help){
+            Intent i = new Intent(getApplicationContext(), HelpActivity.class);
+            startActivity(i);
+        }else if (id == R.id.nav_sobre){
+            Intent i = new Intent(getApplicationContext(), SobreActivity.class);
+            startActivity(i);
+        }else if (id == R.id.nav_send){
+            Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
+            sharingIntent.setType("text/plain");
+            sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.andersonsilva");
+            startActivity(Intent.createChooser(sharingIntent, "Share via"));
+            startActivity(sharingIntent);
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -231,33 +337,13 @@ public class MainActivity extends AppCompatActivity
     * Preparing the list data
     */
     private void prepareListData(List<Sms> listaSms) {
-        listDataHeader = new ArrayList<String>();
-        listDataChild = new HashMap<String, List<String>>();
-
+        listDataHeader = new ArrayList<Sms>();
+        listDataChild = new HashMap<Sms, List<String>>();
         listaSms = agrupaSms(listaSms);
-        /*
-        // Adding child data
-        listDataHeader.add("991642374");
-        listDataHeader.add("99665500");
-
-
-        // Adding child data
-        List<String> sub1 = new ArrayList<String>();
-        sub1.add("01/01/2011 11:55");
-        sub1.add("01/01/2011 11:57");
-
-        List<String> sub2 = new ArrayList<String>();
-        sub2.add("01/01/2014 11:55");
-        sub2.add("01/01/2014 11:57");*/
-
         for (Sms sms: listaSms){
-            listDataHeader.add(sms.getNumeroTeLigou());
-            listDataChild.put(sms.getNumeroTeLigou(), sms.getOcorrencias()); // Header, Child data
+            listDataHeader.add(sms);
+            listDataChild.put(sms, sms.getOcorrencias()); // Header, Child data
         }
-
-
-
-
     }
 
     /**
@@ -272,7 +358,7 @@ public class MainActivity extends AppCompatActivity
                 s1.setOcorrencias(new ArrayList<String>());
             }
             s1.getOcorrencias().add(sms.getDataLigacao()+" "+sms.getHoraLigacao());
-            retorno.add(s1);
+          //  retorno.add(s1);
         }
         return retorno;
 
@@ -286,12 +372,15 @@ public class MainActivity extends AppCompatActivity
      */
     private Sms recuperaSmsExistente(List<Sms> listaRetorno, Sms sms){
         for(Sms s1:listaRetorno){
-           if (s1.getNumeroTeLigou().equals(sms.getNumeroTeLigou())){
+           if (s1.getAddress().equals(sms.getNumeroTeLigou())){
                return s1;
            }
         }
         Sms s1 = new Sms();
-        s1.setNumeroTeLigou(sms.getNumeroTeLigou() + " - " + sms.getNomeContato());
+        s1.setNumeroTeLigou("   "+sms.getNomeContato() + " ("+sms.getNumeroTeLigou()+")");
+        s1.setAddress(sms.getNumeroTeLigou());
+        s1.setImagemContato(sms.getImagemContato());
+        listaRetorno.add(s1);
         return s1;
     }
 
