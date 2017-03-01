@@ -79,7 +79,7 @@ public class SMSReceiver extends BroadcastReceiver {
     public void disparaNotificacao(String str,Sms sms, Context context){
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context)
-                        .setSmallIcon(R.drawable.ic_account_circle_black_24dp)
+                        .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Te ligaram..")
                         .setContentText(str);
         if (sms.getImagemContato()!=null){

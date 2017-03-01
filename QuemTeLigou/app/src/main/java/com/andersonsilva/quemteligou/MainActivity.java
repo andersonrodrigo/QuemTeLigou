@@ -183,22 +183,22 @@ public class MainActivity extends AppCompatActivity
 
     private void addNotification() {
         Sms sms = listaSms.get(0);
-        Bitmap circleBitmap = Bitmap.createBitmap(sms.getImagemContato().getWidth(), sms.getImagemContato().getHeight(), Bitmap.Config.ARGB_8888);
-        BitmapShader shader = new BitmapShader(sms.getImagemContato(),  Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
-        Paint paint = new Paint();
-        paint.setShader(shader);
-        Canvas c = new Canvas(circleBitmap);
-        c.drawCircle(sms.getImagemContato().getWidth()/2, sms.getImagemContato().getHeight()/2, sms.getImagemContato().getWidth()/2, paint);
-
-        Drawable d = new BitmapDrawable(getResources(), circleBitmap);
-
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_account_circle_black_24dp)
+                        .setSmallIcon(R.drawable.ic_launcher)
                         .setContentTitle("Te ligaram..")
                         .setContentText("Me liga ai...");
 
-        builder.setLargeIcon(circleBitmap);
+        if (sms.getImagemContato()!=null){
+            Bitmap circleBitmap = Bitmap.createBitmap(sms.getImagemContato().getWidth(), sms.getImagemContato().getHeight(), Bitmap.Config.ARGB_8888);
+            BitmapShader shader = new BitmapShader(sms.getImagemContato(),  Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            Paint paint = new Paint();
+            paint.setShader(shader);
+            Canvas c = new Canvas(circleBitmap);
+            c.drawCircle(sms.getImagemContato().getWidth()/2, sms.getImagemContato().getHeight()/2, sms.getImagemContato().getWidth()/2, paint);
+            builder.setLargeIcon(circleBitmap);
+        }
+
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,

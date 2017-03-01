@@ -16,7 +16,7 @@
 <Button
     android:layout_width="100dp"
     android:layout_height="50dp"
-    android:visibility="gone"
+   android:visibility="gone"
     android:id="@+id/botaoTesteNotificacao"
     android:text="OK"/>
 
