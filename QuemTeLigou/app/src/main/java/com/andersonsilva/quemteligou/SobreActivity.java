@@ -5,7 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 
 public class SobreActivity extends AppCompatActivity {
 

@@ -4,7 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
     defaultConfig {
-        applicationId "com.quemtimligou.anderonsilva.com.quemteligou"
+        applicationId "com.andersonsilva.quemteligou"
         minSdkVersion 9
         targetSdkVersion 23
         versionCode 1

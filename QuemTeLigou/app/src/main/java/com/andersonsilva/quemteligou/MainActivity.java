@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -22,6 +23,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -36,7 +38,7 @@ import android.widget.Toast;
 
 import com.andersonsilva.quemteligou.adapter.ExpandableListAdapter;
 import com.andersonsilva.quemteligou.adapter.SmsAdapter;
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 import com.andersonsilva.quemteligou.entity.Sms;
 import com.andersonsilva.quemteligou.utils.SmsUtils;
 
@@ -84,6 +86,10 @@ public class MainActivity extends AppCompatActivity
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{ Manifest.permission.READ_CONTACTS},
+                            REQUEST_CODE_B);
+
 
                 } else {
                     Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
@@ -103,7 +109,9 @@ public class MainActivity extends AppCompatActivity
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{ Manifest.permission.RECEIVE_SMS},
+                            REQUEST_CODE_C);
                 } else {
                     Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
                     TextView valorTotal = (TextView) findViewById(R.id.tituloGeralApp);
@@ -122,7 +130,8 @@ public class MainActivity extends AppCompatActivity
 
                     // permission was granted, yay! Do the
                     // contacts-related task you need to do.
-
+                    Intent i = new Intent(getApplicationContext(), MainActivity.class);
+                    startActivity(i);
                 } else {
                     Toast.makeText(MainActivity.this, R.string.ERRO_PERMISSAO, Toast.LENGTH_LONG).show();
                     TextView valorTotal = (TextView) findViewById(R.id.tituloGeralApp);
@@ -155,12 +164,7 @@ public class MainActivity extends AppCompatActivity
                 ActivityCompat.requestPermissions(this,
                         new String[]{ Manifest.permission.READ_SMS},
                         REQUEST_CODE_A);
-                ActivityCompat.requestPermissions(this,
-                        new String[]{ Manifest.permission.READ_CONTACTS},
-                        REQUEST_CODE_B);
-                ActivityCompat.requestPermissions(this,
-                        new String[]{ Manifest.permission.RECEIVE_SMS},
-                        REQUEST_CODE_C);
+
 
 
             }
@@ -279,6 +283,17 @@ public class MainActivity extends AppCompatActivity
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, "https://play.google.com/store/apps/details?id=com.andersonsilva");
             startActivity(Intent.createChooser(sharingIntent, "Share via"));
             startActivity(sharingIntent);
+        }else if (id == R.id.nav_sair){
+            AlertDialog.Builder adb = new AlertDialog.Builder(this);
+            adb.setMessage("Deseja Sair");
+            adb.setPositiveButton("Sim", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    System.exit(0);
+                }
+            });
+            adb.setNegativeButton("Continuar", null);
+            adb.show();
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

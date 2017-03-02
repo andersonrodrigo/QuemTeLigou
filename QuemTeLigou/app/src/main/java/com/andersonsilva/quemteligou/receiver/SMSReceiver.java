@@ -23,9 +23,10 @@ import android.telephony.SmsMessage;
 import android.widget.Toast;
 
 import com.andersonsilva.quemteligou.MainActivity;
+import com.andersonsilva.quemteligou.R;
 import com.andersonsilva.quemteligou.entity.Sms;
 import com.andersonsilva.quemteligou.utils.SmsUtils;
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 
 import java.text.SimpleDateFormat;
 import java.util.Date;

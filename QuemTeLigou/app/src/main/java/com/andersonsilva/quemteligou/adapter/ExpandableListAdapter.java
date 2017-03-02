@@ -22,8 +22,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.andersonsilva.quemteligou.R;
 import com.andersonsilva.quemteligou.entity.Sms;
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 

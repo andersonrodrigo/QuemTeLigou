@@ -9,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 
 public class HelpActivity extends AppCompatActivity {
 

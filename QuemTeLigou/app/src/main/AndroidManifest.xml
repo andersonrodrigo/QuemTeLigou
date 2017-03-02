@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.quemtimligou.anderonsilva.com.quemteligou">
+    package="com.andersonsilva.quemteligou"
+    android:versionCode="1" android:versionName="Beta">
 
     <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />

@@ -10,7 +10,7 @@
         android:paddingTop="@dimen/activity_vertical_margin"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:background="#FFFFFF"
-        tools:context="com.quemtimligou.anderonsilva.com.quemteligou.MainActivity"
+        tools:context="MainActivity"
         tools:showIn="@layout/app_bar_main">
 
 <Button

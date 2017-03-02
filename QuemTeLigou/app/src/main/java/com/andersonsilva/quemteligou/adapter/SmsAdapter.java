@@ -10,8 +10,9 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 
+import com.andersonsilva.quemteligou.R;
 import com.andersonsilva.quemteligou.entity.Sms;
-import com.quemtimligou.anderonsilva.com.quemteligou.R;
+
 
 import java.util.ArrayList;
 
