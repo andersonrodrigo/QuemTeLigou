@@ -61,7 +61,14 @@ public class SMSReceiver extends BroadcastReceiver {
                     ContentResolver contentResolver = context.getContentResolver();
                     SmsUtils.preencheObjetoSmsTorpedoCobrar(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
                     str = "Opa, " + sms.getNomeContato() + " Te Mandou um Torpedo a Cobrar!!!";
+                }else if (sms.getMsg().indexOf("TIM Avisa:") > -1) {
+                    ContentResolver contentResolver = context.getContentResolver();
+                    SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                    str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
                 }
+
+
+
           /*      str += "SMS from " + msgs[i].getOriginatingAddress();
                 str += " :";
                 str += msgs[i].getMessageBody().toString();

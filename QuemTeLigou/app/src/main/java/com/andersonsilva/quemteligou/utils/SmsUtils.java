@@ -113,7 +113,7 @@ public class SmsUtils {
                             } catch (Exception e) {
 
                             }
-
+//TIM Avisa: <04131983798686>
                         }else  if (objSms.getMsg().indexOf("TIM Avisa:") > -1) {
                             try {
                                 objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
@@ -153,18 +153,33 @@ public class SmsUtils {
      *
      * @param cr
      * @param objSms
+     *  TIM Avisa: <04131983798686> te ligou, dia 02/03 as 14:44 powered by Truecaller
      */
     public static void preencheObjetoSms(ContentResolver cr,String data,Sms objSms){
-        objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
-        objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+2,objSms.getMsg().indexOf(">")+7));
-        objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+7,objSms.getMsg().indexOf(">")+13));
-        String ano = (new SimpleDateFormat("yyyy").format(new Date()));
-        objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
-        String numeroBase = objSms.getNumeroTeLigou();
-        if (numeroBase.length() == 14){
-            numeroBase = numeroBase.substring(6,14);
+        if (objSms.getMsg().indexOf("TIM Avisa:")>-1){
+            objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
+            objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf("dia ")+4,objSms.getMsg().indexOf(" as ")));
+            objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" as ")+4,objSms.getMsg().indexOf(" as ")+5));
+            String ano = (new SimpleDateFormat("yyyy").format(new Date()));
+            objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
+            String numeroBase = objSms.getNumeroTeLigou();
+            if (numeroBase.length() == 14){
+                numeroBase = numeroBase.substring(6,14);
+            }
+            recuperaNomeContato(cr,numeroBase,objSms);
+        }else{
+            objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<")+1,objSms.getMsg().indexOf(">")));
+            objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+2,objSms.getMsg().indexOf(">")+7));
+            objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">")+7,objSms.getMsg().indexOf(">")+13));
+            String ano = (new SimpleDateFormat("yyyy").format(new Date()));
+            objSms.setDataLigacao(objSms.getDataLigacao()+"/"+ano);
+            String numeroBase = objSms.getNumeroTeLigou();
+            if (numeroBase.length() == 14){
+                numeroBase = numeroBase.substring(6,14);
+            }
+            recuperaNomeContato(cr,numeroBase,objSms);
         }
-        recuperaNomeContato(cr,numeroBase,objSms);
+
     }
 
     /**
