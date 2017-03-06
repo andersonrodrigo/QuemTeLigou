@@ -29,6 +29,7 @@ import com.andersonsilva.quemteligou.utils.SmsUtils;
 
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 public class SMSReceiver extends BroadcastReceiver {
@@ -47,24 +48,32 @@ public class SMSReceiver extends BroadcastReceiver {
             Sms sms = new Sms();
             for (int i=0; i<msgs.length; i++)
             {
-                msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
-                // In case of a particular App / Service.
-                //if(msgs[i].getOriginatingAddress().equals("+91XXX"))
-                //{
+                try {
+                    msgs[i] = SmsMessage.createFromPdu((byte[]) pdus[i]);
+                    // In case of a particular App / Service.
+                    //if(msgs[i].getOriginatingAddress().equals("+91XXX"))
+                    //{
 
-                sms.setMsg(msgs[i].getMessageBody().toString());
-                if (sms.getMsg().indexOf("Te Ligou:") > -1) {
-                    ContentResolver contentResolver = context.getContentResolver();
-                    SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
-                    str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
-                }else if (sms.getMsg().indexOf("Torpedo a Cobrar") > -1) {
-                    ContentResolver contentResolver = context.getContentResolver();
-                    SmsUtils.preencheObjetoSmsTorpedoCobrar(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
-                    str = "Opa, " + sms.getNomeContato() + " Te Mandou um Torpedo a Cobrar!!!";
-                }else if (sms.getMsg().indexOf("TIM Avisa:") > -1) {
-                    ContentResolver contentResolver = context.getContentResolver();
-                    SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
-                    str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    sms.setMsg(msgs[i].getMessageBody().toString());
+                    if (sms.getMsg().indexOf("Te Ligou:") > -1) {
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    } else if (sms.getMsg().indexOf("Torpedo a Cobrar") > -1) {
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSmsTorpedoCobrar(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te Mandou um Torpedo a Cobrar!!!";
+                    } else if (sms.getMsg().indexOf("TIM Avisa:") > -1) {
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    } else if (sms.getMsg().indexOf("Seu Oi recebeu") > 1) {
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    }
+                }catch (Exception e){
+
                 }
 
 

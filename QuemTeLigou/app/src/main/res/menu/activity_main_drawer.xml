@@ -7,14 +7,11 @@
             android:icon="@drawable/ic_account_balance_black_24dp"
             android:title="Inicio" />
 
-        <!--item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Graficos" /-->
+
 
     </group>
 
-    <item android:title="Comunicação">
+    <item android:title="@string/KEY_COMUNICACAO">
         <menu>
             <item
                 android:id="@+id/nav_help"
@@ -22,7 +19,7 @@
                 android:title="Ajuda" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_launcher"
                 android:title="Indicar" />
             <item
                 android:id="@+id/nav_sobre"
