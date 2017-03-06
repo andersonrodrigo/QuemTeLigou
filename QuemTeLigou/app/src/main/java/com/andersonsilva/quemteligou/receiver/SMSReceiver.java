@@ -71,6 +71,10 @@ public class SMSReceiver extends BroadcastReceiver {
                         ContentResolver contentResolver = context.getContentResolver();
                         SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
                         str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    } else if (sms.getMsg().indexOf("Vivo Avisa:") > 1) {
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
                     }
                 }catch (Exception e){
 

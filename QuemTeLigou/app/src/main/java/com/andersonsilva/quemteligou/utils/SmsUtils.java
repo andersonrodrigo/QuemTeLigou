@@ -150,6 +150,25 @@ public class SmsUtils {
                             } catch (Exception e) {
 
                             }
+                            //"Vivo Avisa: Voce recebeu 1 ligacao de: 01531996365970 em 20/02 as 13:24."
+                        }else if (objSms.getMsg().indexOf("Vivo Avisa:") > -1){
+                            try {
+                                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf(" de: ") + 5, objSms.getMsg().indexOf(" em ")));
+                                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" em ") +4, objSms.getMsg().indexOf(" as ")));
+                                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" as ") + 4, objSms.getMsg().indexOf(" as ") + 4 + 5));
+                                Calendar d = Calendar.getInstance();
+                                d.setTimeInMillis(Long.valueOf(c.getString(c.getColumnIndexOrThrow("date"))));
+                                String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
+                                objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
+                                String numeroBase = objSms.getNumeroTeLigou();
+                                if (numeroBase.length() == 12) {
+                                    numeroBase = numeroBase.substring(3, 12);
+                                }
+                                recuperaNomeContato(cr, numeroBase, objSms);
+                                listaSms.add(objSms);
+                            } catch (Exception e) {
+
+                            }
                         }
 
                     }
@@ -201,7 +220,24 @@ public class SmsUtils {
                 } catch (Exception e) {
 
                 }
-            } else {
+            }else if (objSms.getMsg().indexOf("Vivo Avisa:") > -1){
+                try {
+                    objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf(" de: ") + 5, objSms.getMsg().indexOf(" em ")));
+                    objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" em ") +4, objSms.getMsg().indexOf(" as ")));
+                    objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" as ") + 4, objSms.getMsg().indexOf(" as ") + 4 + 5));
+
+                    String ano = (new SimpleDateFormat("yyyy").format(new Date()));
+                    objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
+                    String numeroBase = objSms.getNumeroTeLigou();
+                    if (numeroBase.length() == 14) {
+                        numeroBase = numeroBase.substring(6, 14);
+                    }
+                    recuperaNomeContato(cr, numeroBase, objSms);
+
+                } catch (Exception e) {
+
+                }
+            }else {
                 objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<") + 1, objSms.getMsg().indexOf(">")));
                 objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 2, objSms.getMsg().indexOf(">") + 7));
                 objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 7, objSms.getMsg().indexOf(">") + 13));
