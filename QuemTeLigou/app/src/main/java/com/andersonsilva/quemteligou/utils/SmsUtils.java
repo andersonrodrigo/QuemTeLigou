@@ -151,6 +151,7 @@ public class SmsUtils {
 
                             }
                             //"Vivo Avisa: Voce recebeu 1 ligacao de: 01531996365970 em 20/02 as 13:24."
+//objSms.setMsg("Vivo Avisa: Voce recebeu 1 ligacao de: 01531993068958 em 20/02 as 13:24.");
                         }else if (objSms.getMsg().indexOf("Vivo Avisa:") > -1){
                             try {
                                 objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf(" de: ") + 5, objSms.getMsg().indexOf(" em ")));
@@ -161,8 +162,8 @@ public class SmsUtils {
                                 String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
                                 objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
                                 String numeroBase = objSms.getNumeroTeLigou();
-                                if (numeroBase.length() == 12) {
-                                    numeroBase = numeroBase.substring(3, 12);
+                                if (numeroBase.length() == 14) {
+                                    numeroBase = numeroBase.substring(5, 14);
                                 }
                                 recuperaNomeContato(cr, numeroBase, objSms);
                                 listaSms.add(objSms);
@@ -230,7 +231,7 @@ public class SmsUtils {
                     objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
                     String numeroBase = objSms.getNumeroTeLigou();
                     if (numeroBase.length() == 14) {
-                        numeroBase = numeroBase.substring(6, 14);
+                        numeroBase = numeroBase.substring(5, 14);
                     }
                     recuperaNomeContato(cr, numeroBase, objSms);
 
