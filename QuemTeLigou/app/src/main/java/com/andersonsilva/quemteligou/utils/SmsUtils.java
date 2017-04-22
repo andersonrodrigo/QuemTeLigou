@@ -169,25 +169,6 @@ public class SmsUtils {
                             } catch (Exception e) {
 
                             }
-                        } else if (objSms.getMsg().indexOf("Seu celular tem") > -1  && objSms.getMsg().indexOf(". CLARO")>-1) {
-                            try {
-                                //  Seu celular tem 1 chamada perdida de 031984158945, 28/03 17:44. CLARO
-                                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("perdida de ") + 11, objSms.getMsg().indexOf("perdida de ") + 11 + 12));
-                                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 11, objSms.getMsg().indexOf(". CLARO") - 6));
-                                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 5, objSms.getMsg().indexOf(". CLARO")));
-                                Calendar d = Calendar.getInstance();
-                                d.setTimeInMillis(Long.valueOf(c.getString(c.getColumnIndexOrThrow("date"))));
-                                String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
-                                objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
-                                String numeroBase = objSms.getNumeroTeLigou();
-                                if (numeroBase.length() == 12) {
-                                    numeroBase = numeroBase.substring(3, 12);
-                                }
-                                recuperaNomeContato(cr, numeroBase, objSms);
-                                listaSms.add(objSms);
-                            } catch (Exception e) {
-
-                            }
                         }
 
                     }
@@ -256,39 +237,18 @@ public class SmsUtils {
                 } catch (Exception e) {
 
                 }
-            }else   if (objSms.getMsg().indexOf("Seu celular tem") > -1  && objSms.getMsg().indexOf(". CLARO")>-1) {
-                    try {
-                        //  Seu celular tem 1 chamada perdida de 031984158945, 28/03 17:44. CLARO
-                        objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("perdida de ") + 11, objSms.getMsg().indexOf("perdida de ") + 11 + 12));
-                        objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 11, objSms.getMsg().indexOf(". CLARO") - 6));
-                        objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 5, objSms.getMsg().indexOf(". CLARO")));
-                        Calendar d = Calendar.getInstance();
-
-                        objSms.setDataLigacao(data);
-                        String numeroBase = objSms.getNumeroTeLigou();
-                        if (numeroBase.length() == 12) {
-                            numeroBase = numeroBase.substring(3, 12);
-                        }
-                        recuperaNomeContato(cr, numeroBase, objSms);
-
-                    } catch (Exception e) {
-
-                    }
-
-
-            }else{
-                    objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<") + 1, objSms.getMsg().indexOf(">")));
-                    objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 2, objSms.getMsg().indexOf(">") + 7));
-                    objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 7, objSms.getMsg().indexOf(">") + 13));
-                    String ano = (new SimpleDateFormat("yyyy").format(new Date()));
-                    objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
-                    String numeroBase = objSms.getNumeroTeLigou();
-                    if (numeroBase.length() == 14) {
-                        numeroBase = numeroBase.substring(6, 14);
-                    }
-                    recuperaNomeContato(cr, numeroBase, objSms);
+            }else {
+                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<") + 1, objSms.getMsg().indexOf(">")));
+                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 2, objSms.getMsg().indexOf(">") + 7));
+                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 7, objSms.getMsg().indexOf(">") + 13));
+                String ano = (new SimpleDateFormat("yyyy").format(new Date()));
+                objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
+                String numeroBase = objSms.getNumeroTeLigou();
+                if (numeroBase.length() == 14) {
+                    numeroBase = numeroBase.substring(6, 14);
                 }
-
+                recuperaNomeContato(cr, numeroBase, objSms);
+            }
         }catch (Exception e){
 
         }
