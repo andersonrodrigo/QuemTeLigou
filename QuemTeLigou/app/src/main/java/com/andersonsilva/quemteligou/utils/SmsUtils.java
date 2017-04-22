@@ -151,11 +151,31 @@ public class SmsUtils {
 
                             }
                             //"Vivo Avisa: Voce recebeu 1 ligacao de: 01531996365970 em 20/02 as 13:24."
+//objSms.setMsg("Vivo Avisa: Voce recebeu 1 ligacao de: 01531993068958 em 20/02 as 13:24.");
                         }else if (objSms.getMsg().indexOf("Vivo Avisa:") > -1){
                             try {
                                 objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf(" de: ") + 5, objSms.getMsg().indexOf(" em ")));
                                 objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" em ") +4, objSms.getMsg().indexOf(" as ")));
                                 objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(" as ") + 4, objSms.getMsg().indexOf(" as ") + 4 + 5));
+                                Calendar d = Calendar.getInstance();
+                                d.setTimeInMillis(Long.valueOf(c.getString(c.getColumnIndexOrThrow("date"))));
+                                String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
+                                objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
+                                String numeroBase = objSms.getNumeroTeLigou();
+                                if (numeroBase.length() == 12) {
+                                    numeroBase = numeroBase.substring(3, 12);
+                                }
+                                recuperaNomeContato(cr, numeroBase, objSms);
+                                listaSms.add(objSms);
+                            } catch (Exception e) {
+
+                            }
+                        } else if (objSms.getMsg().indexOf("Seu celular tem") > -1  && objSms.getMsg().indexOf(". CLARO")>-1) {
+                            try {
+                                //  Seu celular tem 1 chamada perdida de 031984158945, 28/03 17:44. CLARO
+                                objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("perdida de ") + 11, objSms.getMsg().indexOf("perdida de ") + 11 + 12));
+                                objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 11, objSms.getMsg().indexOf(". CLARO") - 6));
+                                objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 5, objSms.getMsg().indexOf(". CLARO")));
                                 Calendar d = Calendar.getInstance();
                                 d.setTimeInMillis(Long.valueOf(c.getString(c.getColumnIndexOrThrow("date"))));
                                 String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
@@ -237,7 +257,27 @@ public class SmsUtils {
                 } catch (Exception e) {
 
                 }
-            }else {
+            }else   if (objSms.getMsg().indexOf("Seu celular tem") > -1  && objSms.getMsg().indexOf(". CLARO")>-1) {
+                try {
+                    //  Seu celular tem 1 chamada perdida de 031984158945, 28/03 17:44. CLARO
+                    objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("perdida de ") + 11, objSms.getMsg().indexOf("perdida de ") + 11 + 12));
+                    objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 11, objSms.getMsg().indexOf(". CLARO") - 6));
+                    objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(". CLARO") - 5, objSms.getMsg().indexOf(". CLARO")));
+                    Calendar d = Calendar.getInstance();
+
+                    objSms.setDataLigacao(data);
+                    String numeroBase = objSms.getNumeroTeLigou();
+                    if (numeroBase.length() == 12) {
+                        numeroBase = numeroBase.substring(3, 12);
+                    }
+                    recuperaNomeContato(cr, numeroBase, objSms);
+
+                } catch (Exception e) {
+
+                }
+
+
+            }else{
                 objSms.setNumeroTeLigou(objSms.getMsg().substring(objSms.getMsg().indexOf("<") + 1, objSms.getMsg().indexOf(">")));
                 objSms.setDataLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 2, objSms.getMsg().indexOf(">") + 7));
                 objSms.setHoraLigacao(objSms.getMsg().substring(objSms.getMsg().indexOf(">") + 7, objSms.getMsg().indexOf(">") + 13));
@@ -249,6 +289,7 @@ public class SmsUtils {
                 }
                 recuperaNomeContato(cr, numeroBase, objSms);
             }
+
         }catch (Exception e){
 
         }
@@ -324,29 +365,29 @@ public class SmsUtils {
 
     }
 
-private static void recuperaNomeContatoSIM(ContentResolver cr,String numero, Sms objSms){
-    try {
-        String clsSimPhonename = null;
-        String clsSimphoneNo = null;
+    private static void recuperaNomeContatoSIM(ContentResolver cr,String numero, Sms objSms){
+        try {
+            String clsSimPhonename = null;
+            String clsSimphoneNo = null;
 
-        Uri simUri = Uri.parse("content://icc/adn");
-        Cursor cursorSim = cr.query(simUri, null,
-                null, null, null);
-        while (cursorSim.moveToNext()) {
-            clsSimPhonename = cursorSim.getString(cursorSim.getColumnIndex("name"));
-            clsSimphoneNo = cursorSim.getString(cursorSim.getColumnIndex("number"));
-            String numeroBase = clsSimphoneNo.replace("-","");
-            if (numeroBase.indexOf(numero)>-1) {
-                objSms.setNomeContato(clsSimPhonename);
-                break;
+            Uri simUri = Uri.parse("content://icc/adn");
+            Cursor cursorSim = cr.query(simUri, null,
+                    null, null, null);
+            while (cursorSim.moveToNext()) {
+                clsSimPhonename = cursorSim.getString(cursorSim.getColumnIndex("name"));
+                clsSimphoneNo = cursorSim.getString(cursorSim.getColumnIndex("number"));
+                String numeroBase = clsSimphoneNo.replace("-","");
+                if (numeroBase.indexOf(numero)>-1) {
+                    objSms.setNomeContato(clsSimPhonename);
+                    break;
+                }
             }
-        }
 
-    } catch (Exception e) {
-        e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        objSms.setNomeContato("Não encontrado.");
     }
-    objSms.setNomeContato("Não encontrado.");
-}
 
 
 

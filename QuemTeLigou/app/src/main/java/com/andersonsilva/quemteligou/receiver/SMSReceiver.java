@@ -75,7 +75,12 @@ public class SMSReceiver extends BroadcastReceiver {
                         ContentResolver contentResolver = context.getContentResolver();
                         SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
                         str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
+                    } else  if (sms.getMsg().indexOf("Seu celular tem") > -1  && sms.getMsg().indexOf(". CLARO")>-1){
+                        ContentResolver contentResolver = context.getContentResolver();
+                        SmsUtils.preencheObjetoSms(contentResolver, new SimpleDateFormat("dd/MM/yyyy").format(new Date()), sms);
+                        str = "Opa, " + sms.getNomeContato() + " Te ligou!!!";
                     }
+
                 }catch (Exception e){
 
                 }
@@ -90,9 +95,9 @@ public class SMSReceiver extends BroadcastReceiver {
                 //}
             }
             // Display the SMS as Toast.
-           // Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
+            // Toast.makeText(context, str, Toast.LENGTH_SHORT).show();
             if (!str.equals("")){
-               disparaNotificacao(str,sms,context);
+                disparaNotificacao(str,sms,context);
             }
         }
     }
