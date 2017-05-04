@@ -162,8 +162,8 @@ public class SmsUtils {
                                 String ano = (new SimpleDateFormat("yyyy").format(d.getTime()));
                                 objSms.setDataLigacao(objSms.getDataLigacao() + "/" + ano);
                                 String numeroBase = objSms.getNumeroTeLigou();
-                                if (numeroBase.length() == 12) {
-                                    numeroBase = numeroBase.substring(3, 12);
+                                if (numeroBase.length() == 14) {
+                                    numeroBase = numeroBase.substring(5, 14);
                                 }
                                 recuperaNomeContato(cr, numeroBase, objSms);
                                 listaSms.add(objSms);

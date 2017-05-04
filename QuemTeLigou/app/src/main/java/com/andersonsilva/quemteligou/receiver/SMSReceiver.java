@@ -82,7 +82,7 @@ public class SMSReceiver extends BroadcastReceiver {
                     }
 
                 }catch (Exception e){
-
+e.printStackTrace();
                 }
 
 
